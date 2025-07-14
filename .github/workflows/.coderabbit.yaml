@@ -1,54 +1,41 @@
-# .coderabbit.yaml
-# CodeRabbit Configuration for Sandbox Security Review
 tone_instructions: |
-  Use clear, professional language focused on security and safety.
-  Highlight critical issues with appropriate emphasis.
-  Provide actionable feedback with specific examples.
+  Adopt a concise, matter-of-fact style that gets straight to the point without unnecessary pleasantries.
 
 reviews:
   profile: assertive
   high_level_summary: true
+  high_level_summary_in_walkthrough: true
+  poem: false
+  collapse_walkthrough: false
   path_filters:
     - "!**/*.md"
     - "!**/*.json"
     - "!**/node_modules/**"
     - "!**/dist/**"
     - "!**/build/**"
-  
 
 path_instructions:
   - path: "apps/api/src/sandbox/managers/sandbox.manager.ts"
     instructions: |
-      CRITICAL: Review this file and ensure that:
-         - Only non-negative values (>= 0) for autoDeleteInterval trigger auto-delete
-         - Only stopped sandboxes are considered for auto-delete
-         - Time calculations are corrected for determining if auto-delete should be triggered
-         - Negative values for autoDeleteInterval disable auto-delete functionality
-         - Only positive values (> 0) for autoStopInterval trigger auto-stop
-         - Only started sandboxes are considered for auto-stop
-         - Time calculations are corrected for determining if auto-stop should be triggered
-         - 0 for autoStopInterval disables auto-stop functionality
-         - A sandbox is deleted instead of stopped during auto-stop check when autoDeleteInterval is equal to 0
-         - Only non-negative values (>= 0) for autoArchiveInterval trigger auto-archive
-         - Only stopped sandboxes are considered for auto-archive
-         - Time calculations are corrected for determining if auto-archive should be triggered
-         - Negative values for autoArchiveInterval disable auto-archive functionality
-         - Most importantly, ensure that the auto-delete functionality is not enabled by default and that the user must explicitly set the auto-delete interval to a non-negative value to enable it.
+      - During the auto-delete cron job, only sandboxes with non-negative values (>= 0) "autoDeleteInterval" value should be considered for deletion
+      - During the auto-delete cron job, only sandboxes with "Stopped" state should be considered for deletion
+      - During the auto-stop cron job, only sandboxes with "autoStopInterval" value greater than 0 should be considered for stopping
+      - During the auto-stop cron job, only sandboxes with "Started" state should be considered for stopping
+      - During the auto-stop cron job, if "autoDeleteInterval" is equal to 0, the sandbox should be deleted instead of stopped
+      - During the auto-archive cron job, only sandboxes with "Stopped" state should be considered for archiving
 
   - path: "apps/api/src/sandbox/services/sandbox.service.ts"
     instructions: |
-      CRITICAL: Review this file and ensure that:      
-         - Negative values for autoStopInterval are rejected
-         - Negative values for autoStopInterval are rejected
-         - Maximum interval is used when 0 is provided as user input
-         - Maximum interval is used when user input is larger than the maximum interval
-         - When stopping a sandbox, immediately delete it if autoDeleteInterval is 0
+      - When creating a sandbox, negative value for "autoStopInterval" must be rejected
+      - When creating a sandbox, negative value for "autoArchiveInterval" must be rejected
+      - When creating a sandbox, the maximum auto-archive interval defined in app config must be used when 0 is provided as user input
+      - When creating a sandbox, the maximum auto-archive interval defined in app config must be used when user input is larger than the maximum interval
+      - When setting a new value for "autoStopInterval", the value must be validated and rejected if it is negative
+      - When setting a new value for "autoArchiveInterval", the value must be validated and rejected if it is negative
+      - When setting a new value for "autoArchiveInterval", the maximum auto-archive interval defined in app config must be used when 0 is provided as user input
+      - When setting a new value for "autoArchiveInterval", the maximum auto-archive interval defined in app config must be used when user input is larger than the maximum interval
+      - When stopping a sandbox, the desired state must be set to "Stopped", unless "autoDeleteInterval" is equal to 0, in which case the desired state must be set to "Destroyed"
 
   - path: "apps/api/src/sandbox/entities/sandbox.entity.ts"
-    instructions: |
-      CRITICAL: Review this file and ensure that:      
-         - Negative value for autoDeleteInterval is used as default
-         - Value for lastActivityAt is updated when changes are made to the sandbox
-
-chat:
-  auto_reply: true
+    instructions: | 
+      - The default value for "autoDeleteInterval" must be a negative value
