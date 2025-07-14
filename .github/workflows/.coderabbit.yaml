@@ -1,0 +1,125 @@
+# .coderabbit.yaml
+# CodeRabbit Configuration for Sandbox Security Review
+
+reviews:
+  profile: assertive
+  request_changes: auto
+  high_level_summary: true
+
+path_instructions:
+  - path: "apps/api/src/sandbox/managers/sandbox.manager.ts"
+    instructions: |
+      Focus on sandbox lifecycle management and automated cleanup safety. Critically, ensure that by default sandboxes are not auto-deleted unless the user explicitly sets the auto-delete interval to a non-negative value.
+      
+      Key Areas:
+      1. Auto-delete check:
+         - Verify only non-negative values (>= 0) trigger auto-delete
+         - Verify only stopped sandboxes are considered for auto-delete
+         - Ensure correct time calculations for determining if auto-delete should be triggered
+         - Ensure negative values disable auto-delete functionality
+      
+      2. Auto-stop check:
+         - Verify only positive values (> 0) trigger auto-stop
+         - Verify only started sandboxes are considered for auto-stop
+         - Ensure correct time calculations for determining if auto-stop should be triggered
+         - Ensure 0 disables auto-stop functionality
+         - Verify that sandbox is deleted instead of stopped when autoDeleteInterval is equal to 0
+
+      3. Auto-archive check:
+         - Verify only non-negative values (>= 0) trigger auto-archive
+         - Verify only stopped sandboxes are considered for auto-archive
+         - Ensure correct time calculations for determining if auto-archive should be triggered
+         - Ensure negative values disable auto-archive functionality
+      
+      4. Concurrency & Race Conditions:
+         - Review thread safety between cleanup operations
+         - Check proper locking mechanisms
+         - Verify atomic operations for state changes
+      
+      5. Error Handling:
+         - Ensure failures default to safe state (no auto-delete or auto-stop or auto-archive)
+         - Verify comprehensive logging of all decisions
+         - Check graceful degradation patterns
+      
+      Critical Safety Rule: When uncertain, preserve sandbox data.
+
+  - path: "apps/api/src/sandbox/services/sandbox.service.ts"
+    instructions: |
+      Focus on sandbox configuration and interval validation logic. Critically, ensure that by default sandboxes are not auto-deleted unless the user explicitly sets the auto-delete interval to a non-negative value.
+      
+      Key Areas:
+      1. Create Sandbox:
+         - Reject negative values for auto-stop interval
+         - Reject negative values for auto-archive interval
+         - Use maximum interval for auto-archive interval when 0 is provided as user input
+         - Use maximum interval for auto-archive interval when user input is larger than the maximum interval
+      
+      2. Set auto-stop interval:
+         - Reject negative values
+      
+      3. Set auto-archive interval:
+         - Reject negative values
+         - Use maximum interval when 0 is provided as user input
+         - Use maximum interval when user input is larger than the maximum interval
+      
+      4. Stop sandbox:
+         - Immediate delete when autoDeleteInterval === 0
+      
+      5. Input Validation:
+         - Clear error messages for invalid inputs
+
+  - path: "apps/api/src/sandbox/entities/sandbox.entity.ts"
+    instructions: |
+      Focus on entity schema and default value safety.
+      
+      Key Areas:
+      1. autoDeleteInterval Property:
+         - Verify safe default value (should disable auto-delete with negative value)
+         - Check database column supports negative integers
+         - Ensure no validation decorators reject negative values
+      
+      2. autoStopInterval Property:
+         - Verify reasonable default value
+         - Check that 0 is valid
+
+      3. autoArchiveInterval Property:
+         - Verify reasonable default value
+         - Check that 0 is valid
+      
+      4. lastActivityAt Property:
+         - Verify that lastActivityAt is updated when changes are made to the sandbox
+   
+
+  - path: "apps/api/src/sandbox/controllers/sandbox.controller.ts"
+    instructions: |
+      Focus on API endpoint validation and parameter handling.
+      
+      Key Areas:
+      1. setAutoDeleteInterval() Endpoint:
+         - Accept negative values (disabled state)
+         - Accept 0 (immediate delete)
+         - Accept positive integers (timed auto-delete)
+      
+      2. setAutostopInterval() Endpoint:
+         - Accept 0 (disabled state)
+         - Accept positive integers (timed auto-stop)
+
+      3. setAutoArchiveInterval() Endpoint:
+         - Accept 0 (max interval)
+         - Accept positive integers (timed auto-archive)
+
+ignore:
+  - "**/*.md"
+  - "**/*.json"
+  - "**/test/**"
+  - "**/tests/**"
+  - "**/*.spec.ts"
+  - "**/*.test.ts"
+  - "**/node_modules/**"
+  - "**/dist/**"
+  - "**/build/**"
+  - "**/.git/**"
+  - "**/*.log"
+
+chat:
+  auto_reply: true
