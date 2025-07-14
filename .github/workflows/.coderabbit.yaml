@@ -1,15 +1,23 @@
 # .coderabbit.yaml
 # CodeRabbit Configuration for Sandbox Security Review
+tone_instructions: |
+  Use clear, professional language focused on security and safety.
+  Highlight critical issues with appropriate emphasis.
+  Provide actionable feedback with specific examples.
 
 reviews:
   profile: assertive
   request_changes: auto
   high_level_summary: true
+  review_status: true
+  poem: false
+  collapse_walkthrough: false
+  
 
 path_instructions:
   - path: "apps/api/src/sandbox/managers/sandbox.manager.ts"
     instructions: |
-      Focus on sandbox lifecycle management and automated cleanup safety. Critically, ensure that by default sandboxes are not auto-deleted unless the user explicitly sets the auto-delete interval to a non-negative value.
+      CRITICAL: Ensure that by default sandboxes are not auto-deleted unless the user explicitly sets the auto-delete interval to a non-negative value. Check for any changes to behavior outlined in the key areas below and highlight that this is a critical change that should be reviewed.
       
       Key Areas:
       1. Auto-delete check:
@@ -45,7 +53,7 @@ path_instructions:
 
   - path: "apps/api/src/sandbox/services/sandbox.service.ts"
     instructions: |
-      Focus on sandbox configuration and interval validation logic. Critically, ensure that by default sandboxes are not auto-deleted unless the user explicitly sets the auto-delete interval to a non-negative value.
+      CRITICAL: Ensure that by default sandboxes are not auto-deleted unless the user explicitly sets the auto-delete interval to a non-negative value. Check for any changes to behavior outlined in the key areas below and highlight that this is a critical change that should be reviewed.
       
       Key Areas:
       1. Create Sandbox:
