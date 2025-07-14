@@ -103,9 +103,8 @@ export class SandboxManager {
 
             try {
               sandbox.pending = true
-              //  if auto-delete interval is 0, delete the sandbox immediately
               if (sandbox.autoDeleteInterval === 0) {
-                sandbox.desiredState = SandboxDesiredState.DESTROYED
+                sandbox.desiredState = SandboxDesiredState.STOPPED
               } else {
                 sandbox.desiredState = SandboxDesiredState.STOPPED
               }
@@ -141,8 +140,6 @@ export class SandboxManager {
           where: {
             runnerId: runner.id,
             organizationId: Not(SANDBOX_WARM_POOL_UNASSIGNED_ORGANIZATION),
-            state: SandboxState.STOPPED,
-            desiredState: SandboxDesiredState.STOPPED,
             pending: Not(true),
             lastActivityAt: Raw((alias) => `${alias} < NOW() - INTERVAL '1 minute' * "autoArchiveInterval"`),
           },
@@ -200,7 +197,6 @@ export class SandboxManager {
             state: SandboxState.STOPPED,
             desiredState: SandboxDesiredState.STOPPED,
             pending: Not(true),
-            autoDeleteInterval: MoreThanOrEqual(0),
             lastActivityAt: Raw((alias) => `${alias} < NOW() - INTERVAL '1 minute' * "autoDeleteInterval"`),
           },
           order: {
