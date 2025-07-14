@@ -188,11 +188,6 @@ export class Sandbox {
   }
 
   @BeforeUpdate()
-  updateLastActivityAt() {
-    this.lastActivityAt = new Date()
-  }
-
-  @BeforeUpdate()
   validateDesiredState() {
     switch (this.desiredState) {
       case SandboxDesiredState.STARTED:
