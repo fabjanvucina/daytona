@@ -7,11 +7,13 @@ tone_instructions: |
 
 reviews:
   profile: assertive
-  request_changes: auto
   high_level_summary: true
-  review_status: true
-  poem: false
-  collapse_walkthrough: false
+  path_filters:
+    - "!**/*.md"
+    - "!**/*.json"
+    - "!**/node_modules/**"
+    - "!**/dist/**"
+    - "!**/build/**"
   
 
 path_instructions:
