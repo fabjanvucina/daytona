@@ -161,7 +161,7 @@ export class Sandbox {
   //  this is the interval in minutes after which a continuously stopped workspace will be automatically deleted
   //  if set to negative value, auto delete will be disabled
   //  if set to 0, sandbox will be immediately deleted upon stopping
-  @Column({ default: -1 })
+  @Column({ default: 0 })
   autoDeleteInterval?: number
 
   @Column({ default: false })
