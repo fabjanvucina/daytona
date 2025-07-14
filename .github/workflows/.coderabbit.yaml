@@ -48,18 +48,5 @@ path_instructions:
          - Negative value for autoDeleteInterval is used as default
          - Value for lastActivityAt is updated when changes are made to the sandbox
 
-ignore:
-  - "**/*.md"
-  - "**/*.json"
-  - "**/test/**"
-  - "**/tests/**"
-  - "**/*.spec.ts"
-  - "**/*.test.ts"
-  - "**/node_modules/**"
-  - "**/dist/**"
-  - "**/build/**"
-  - "**/.git/**"
-  - "**/*.log"
-
 chat:
   auto_reply: true
